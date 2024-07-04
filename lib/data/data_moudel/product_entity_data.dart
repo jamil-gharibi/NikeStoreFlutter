@@ -1,4 +1,5 @@
 import 'package:hive_flutter/adapters.dart';
+import 'package:nike_flutter_application/data/data_source/favorite_manager.dart';
 // part "product.g.dart";
 
 class ProductSort {
@@ -15,19 +16,12 @@ class ProductSort {
   ];
 }
 
-@HiveType(typeId: 1)
 class ProductEntity {
-  @HiveField(0)
   final int id;
-  @HiveField(1)
   final String title;
-  @HiveField(2)
   final String imageUrl;
-  @HiveField(3)
   final int price;
-  @HiveField(4)
   final int discount;
-  @HiveField(5)
   final int previousPrice;
 
   ProductEntity(this.id, this.title, this.imageUrl, this.price, this.discount,
@@ -42,4 +36,27 @@ class ProductEntity {
             : json['price'],
         previousPrice = json['previous_price'] ?? json['price'],
         discount = json['discount'];
+
+  Map<String, dynamic> toMap() {
+    var map = <String, dynamic>{
+      FieldNamesDb.columnTitle: title,
+      FieldNamesDb.columnImageUrl: imageUrl,
+      FieldNamesDb.columnPrice: price,
+      FieldNamesDb.columnDiscount: discount,
+      FieldNamesDb.columnPreviousPrice: previousPrice
+    };
+    if (id != null) {
+      map[FieldNamesDb.columnId] = id;
+    }
+
+    return map;
+  }
+
+  ProductEntity.fromMap(Map<String, dynamic> map)
+      : id = map[FieldNamesDb.columnId],
+        title = map[FieldNamesDb.columnTitle],
+        imageUrl = map[FieldNamesDb.columnImageUrl],
+        price = map[FieldNamesDb.columnPrice],
+        discount = map[FieldNamesDb.columnDiscount],
+        previousPrice = map[FieldNamesDb.columnPreviousPrice];
 }

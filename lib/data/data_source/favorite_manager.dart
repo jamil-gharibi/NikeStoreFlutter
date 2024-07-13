@@ -1,12 +1,17 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:nike_flutter_application/data/data_moudel/product_entity_data.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite/sqlite_api.dart';
 
-class FavoriteManagerDb {
-  static final FavoriteManagerDb favoriteDb = FavoriteManagerDb._internal();
+final favoriteManagerDb = FavoriteManagerDb._internal();
 
+class FavoriteManagerDb {
   static Database? _dataBase;
 
+  ValueNotifier<List<ProductEntity>> valuNotifireFavorite = ValueNotifier([]);
   FavoriteManagerDb._internal();
 
   Future<Database> get database async {
@@ -39,33 +44,38 @@ class FavoriteManagerDb {
       )''');
   }
 
-  Future<int> insertFavorite(ProductEntity productEntity) async {
-    final db = await favoriteDb._initDatabase();
-    final id =
-        await db.insert(FieldNamesDb.tableNameProduct, productEntity.toMap());
-    return id;
+  Future<bool> insertFavorite(ProductEntity productEntity) async {
+    final db = await favoriteManagerDb._initDatabase();
+    int id = -1;
+    id = await db.insert(FieldNamesDb.tableNameProduct, productEntity.toMap());
+    valuNotifireFavorite.value = await readAll();
+    return id > -1;
   }
 
   Future<bool> isFavorite(int id) async {
-    final db = await favoriteDb.database;
+    final db = await favoriteManagerDb.database;
     final maps = await db.query(
       FieldNamesDb.tableNameProduct,
       columns: [FieldNamesDb.columnId],
       where: '${FieldNamesDb.columnId} = ?',
       whereArgs: [id],
     );
-
-    return maps.isEmpty;
+    valuNotifireFavorite.value = await readAll();
+    return maps.isNotEmpty;
   }
 
   Future<List<ProductEntity>> readAll() async {
-    final db = await favoriteDb.database;
+    final db = await favoriteManagerDb.database;
     final result = await db.query(FieldNamesDb.tableNameProduct);
-    return result.map((json) => ProductEntity.fromMap(json)).toList();
+    final favorites =
+        result.map((json) => ProductEntity.fromMap(json)).toList();
+    valuNotifireFavorite.value = favorites;
+    return favorites;
   }
 
   Future<int> update(ProductEntity productEntity) async {
-    final db = await favoriteDb.database;
+    final db = await favoriteManagerDb.database;
+    valuNotifireFavorite.value = await readAll();
     return db.update(
       FieldNamesDb.tableNameProduct,
       productEntity.toMap(),
@@ -75,16 +85,18 @@ class FavoriteManagerDb {
   }
 
   Future<int> delete(int id) async {
-    final db = await favoriteDb.database;
-    return await db.delete(
+    final db = await favoriteManagerDb.database;
+    int rowsEfected = await db.delete(
       FieldNamesDb.tableNameProduct,
       where: '${FieldNamesDb.columnId} = ?',
       whereArgs: [id],
     );
+    valuNotifireFavorite.value = await readAll();
+    return rowsEfected;
   }
 
   Future close() async {
-    final db = await favoriteDb.database;
+    final db = await favoriteManagerDb.database;
     db.close();
   }
 }

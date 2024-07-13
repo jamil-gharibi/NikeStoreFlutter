@@ -1,4 +1,3 @@
-import 'package:hive_flutter/adapters.dart';
 import 'package:nike_flutter_application/data/data_source/favorite_manager.dart';
 // part "product.g.dart";
 
@@ -39,16 +38,13 @@ class ProductEntity {
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
+      FieldNamesDb.columnId: id,
       FieldNamesDb.columnTitle: title,
       FieldNamesDb.columnImageUrl: imageUrl,
       FieldNamesDb.columnPrice: price,
       FieldNamesDb.columnDiscount: discount,
       FieldNamesDb.columnPreviousPrice: previousPrice
     };
-    if (id != null) {
-      map[FieldNamesDb.columnId] = id;
-    }
-
     return map;
   }
 

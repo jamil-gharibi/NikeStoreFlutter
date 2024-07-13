@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:nike_flutter_application/data/data_moudel/auth_data.dart';
 import 'package:nike_flutter_application/data/repo/auth_repository.dart';
 import 'package:nike_flutter_application/ui/auth/auth.dart';
+import 'package:nike_flutter_application/ui/favorite/favorite_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -57,7 +58,10 @@ class ProfileScreen extends StatelessWidget {
                     height: 1,
                   ),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => FavoriteScreen()));
+                    },
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       child: Row(

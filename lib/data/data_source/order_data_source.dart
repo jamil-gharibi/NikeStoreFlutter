@@ -5,6 +5,7 @@ import 'package:nike_flutter_application/data/data_moudel/payment_receipt.dart';
 abstract class IOrderDtatSource {
   Future<SubmitOrderResult> submitOrder(SubmitOrderParams params);
   Future<PaymentReceiptData> getPaymentReceipt(int orederId);
+  Future<List<OrderEntity>> getOrder();
 }
 
 class OrderRemoteDataSource implements IOrderDtatSource {
@@ -31,5 +32,13 @@ class OrderRemoteDataSource implements IOrderDtatSource {
   Future<PaymentReceiptData> getPaymentReceipt(int orederId) async {
     final response = await httpClient.get('order/checkout?order_id=$orederId');
     return PaymentReceiptData.fromJson(response.data);
+  }
+
+  @override
+  Future<List<OrderEntity>> getOrder() async {
+    final response = await httpClient.get('order/list');
+    return (response.data as List)
+        .map((item) => OrderEntity.fromJsom(item))
+        .toList();
   }
 }

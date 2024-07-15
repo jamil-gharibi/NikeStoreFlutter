@@ -15,6 +15,11 @@ class ProductSort {
   ];
 }
 
+class ProductBase {
+  final List<ProductEntity> products;
+  ProductBase.fromJson(Map<String, dynamic> json) : products = json['product'];
+}
+
 class ProductEntity {
   final int id;
   final String title;
@@ -28,7 +33,7 @@ class ProductEntity {
 
   ProductEntity.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        title = json['title'],
+        title = json['title'] ?? 'title',
         imageUrl = json['image'],
         price = json['previous_price'] == null
             ? json['price'] - json['discount']
